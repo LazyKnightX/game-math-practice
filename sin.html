@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sin函数应用 - 方向移动与圆周运动</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #1a1a1a;
+            font-family: Arial, sans-serif;
+            color: #fff;
+        }
+
+        canvas {
+            border: 2px solid #00ff00;
+            background-color: #0a0a0a;
+            margin: 20px 0;
+        }
+
+        .controls {
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            width: 800px;
+        }
+
+        .control-group {
+            margin: 10px 0;
+        }
+
+        label {
+            display: inline-block;
+            width: 150px;
+            color: #00ff00;
+        }
+
+        input[type="range"] {
+            width: 200px;
+        }
+
+        button {
+            background-color: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #00cc00;
+        }
+
+        .info {
+            background-color: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+            width: 800px;
+            font-family: monospace;
+        }
+
+        .info-line {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 Sin函数游戏应用演示</h1>
+
+    <div class="controls">
+        <h3>控制面板</h3>
+
+        <div class="control-group">
+            <label>玩家速度:</label>
+            <input type="range" id="playerSpeed" min="1" max="10" value="5" step="0.5">
+            <span id="playerSpeedValue">5</span>
+        </div>
+
+        <div class="control-group">
+            <label>敌人数量:</label>
+            <input type="range" id="enemyCount" min="1" max="10" value="3" step="1">
+            <span id="enemyCountValue">3</span>
+        </div>
+
+        <div class="control-group">
+            <label>圆周半径:</label>
+            <input type="range" id="orbitRadius" min="50" max="200" value="100" step="10">
+            <span id="orbitRadiusValue">100</span>
+        </div>
+
+        <div class="control-group">
+            <label>旋转速度:</label>
+            <input type="range" id="rotationSpeed" min="0.5" max="5" value="2" step="0.5">
+            <span id="rotationSpeedValue">2</span>
+        </div>
+
+        <div class="control-group">
+            <button id="resetBtn">重置</button>
+            <button id="pauseBtn">暂停</button>
+        </div>
+    </div>
+
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+    <div class="info">
+        <h3>📊 实时信息</h3>
+        <div class="info-line">玩家位置: X=<span id="playerX">400</span>, Y=<span id="playerY">300</span></div>
+        <div class="info-line">玩家角度: <span id="playerAngle">0</span>°</div>
+        <div class="info-line">鼠标角度: <span id="mouseAngle">0</span>°</div>
+        <div class="info-line">FPS: <span id="fps">60</span></div>
+        <div class="info-line">
+            <br>
+            <strong>操作说明:</strong><br>
+            • WASD 或 方向键 - 移动玩家<br>
+            • 鼠标移动 - 玩家朝向鼠标方向<br>
+            • 敌人会围绕玩家做圆周运动
+        </div>
+    </div>
+
+    <script>
+        // ========== 画布初始化 ==========
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // ========== 游戏状态 ==========
+        let isPaused = false;
+        let lastTime = 0;
+        let fps = 0;
+
+        // ========== 玩家对象 ==========
+        const player = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            radius: 15,
+            angle: 0,  // 朝向角度（弧度）
+            speed: 5,
+            color: '#00ff00',
+
+            // TODO: 完善移动方法
+            move: function(directionAngle, speed) {
+                // 提示：使用 Math.cos() 和 Math.sin() 计算x和y方向的速度分量
+                // velocityX = speed * Math.cos(angle)
+                // velocityY = speed * Math.sin(angle)
+
+                // 你的代码：
+
+
+                // 边界检测
+                this.x = Math.max(this.radius, Math.min(canvas.width - this.radius, this.x));
+                this.y = Math.max(this.radius, Math.min(canvas.height - this.radius, this.y));
+            },
+
+            draw: function() {
+                // 绘制玩家圆形
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // TODO: 绘制方向指示线
+                // 提示：从玩家中心画一条指向angle方向的线
+                // 终点坐标 = (x + cos(angle) * length, y + sin(angle) * length)
+
+                // 你的代码：
+
+            }
+        };
+
+        // ========== 敌人数组 ==========
+        let enemies = [];
+
+        // ========== 敌人类 ==========
+        class Enemy {
+            constructor(index, total) {
+                // TODO: 初始化敌人的起始角度
+                // 提示：将360度平均分配给所有敌人
+                // angle = (index / total) * 2 * Math.PI
+
+                this.angle = 0; // 你的代码
+                this.orbitRadius = 100;
+                this.rotationSpeed = 2;
+                this.radius = 10;
+                this.color = '#ff0000';
+                this.index = index;
+            }
+
+            // TODO: 完善更新方法
+            update(deltaTime, centerX, centerY) {
+                // 提示：
+                // 1. 更新角度：angle += rotationSpeed * deltaTime
+                // 2. 计算位置：x = centerX + cos(angle) * radius
+                //              y = centerY + sin(angle) * radius
+
+                // 你的代码：
+
+
+            }
+
+            draw() {
+                // 绘制敌人
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // TODO: 绘制轨道圆圈（虚线）
+                // 提示：使用 ctx.setLineDash([5, 5]) 绘制虚线圆
+
+                // 你的代码：
+
+            }
+        }
+
+        // ========== 输入控制 ==========
+        const keys = {};
+        const mouse = {
+            x: canvas.width / 2,
+            y: canvas.height / 2
+        };
+
+        // 键盘事件
+        window.addEventListener('keydown', (e) => {
+            keys[e.key.toLowerCase()] = true;
+        });
+
+        window.addEventListener('keyup', (e) => {
+            keys[e.key.toLowerCase()] = false;
+        });
+
+        // 鼠标事件
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+        });
+
+        // ========== 输入处理 ==========
+        function handleInput() {
+            let moveX = 0;
+            let moveY = 0;
+
+            // WASD 和 方向键控制
+            if (keys['w'] || keys['arrowup']) moveY -= 1;
+            if (keys['s'] || keys['arrowdown']) moveY += 1;
+            if (keys['a'] || keys['arrowleft']) moveX -= 1;
+            if (keys['d'] || keys['arrowright']) moveX += 1;
+
+            // TODO: 如果有移动输入，计算移动角度并移动玩家
+            // 提示：
+            // 1. 使用 Math.atan2(moveY, moveX) 计算移动角度
+            // 2. 调用 player.move(angle, speed)
+
+            if (moveX !== 0 || moveY !== 0) {
+                // 你的代码：
+
+                let moveDeg = Math.atan2(moveY, moveX);
+                let moveSpd = 2;
+                player.move(moveDeg, moveSpd);
+            }
+
+            // TODO: 计算玩家朝向鼠标的角度
+            // 提示：使用 Math.atan2(mouse.y - player.y, mouse.x - player.x)
+
+            // 你的代码：
+
+        }
+
+        // ========== 初始化敌人 ==========
+        function initEnemies(count) {
+            enemies = [];
+            for (let i = 0; i < count; i++) {
+                enemies.push(new Enemy(i, count));
+            }
+        }
+
+        // ========== 更新游戏 ==========
+        function update(deltaTime) {
+            if (isPaused) return;
+
+            // 处理输入
+            handleInput();
+
+            // TODO: 更新所有敌人
+            // 提示：遍历enemies数组，调用每个敌人的update方法
+
+            // 你的代码：
+
+        }
+
+        // ========== 绘制游戏 ==========
+        function draw() {
+            // 清空画布
+            ctx.fillStyle = '#0a0a0a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 绘制网格（可选）
+            drawGrid();
+
+            // 绘制中心十字（参考点）
+            drawCenterCross();
+
+            // TODO: 绘制所有敌人
+            // 你的代码：
+
+
+            // 绘制玩家
+            player.draw();
+
+            // 绘制鼠标位置（调试用）
+            drawMouseIndicator();
+        }
+
+        // ========== 辅助绘制函数 ==========
+        function drawGrid() {
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.lineWidth = 1;
+
+            // 垂直线
+            for (let x = 0; x < canvas.width; x += 50) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+
+            // 水平线
+            for (let y = 0; y < canvas.height; y += 50) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+        }
+
+        function drawCenterCross() {
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+
+            // 垂直线
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.stroke();
+
+            // 水平线
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height / 2);
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.stroke();
+        }
+
+        function drawMouseIndicator() {
+            ctx.strokeStyle = '#ffff00';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(mouse.x, mouse.y, 5, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+
+        // ========== 更新UI信息 ==========
+        function updateInfo() {
+            document.getElementById('playerX').textContent = Math.round(player.x);
+            document.getElementById('playerY').textContent = Math.round(player.y);
+            document.getElementById('playerAngle').textContent = Math.round(player.angle * 180 / Math.PI);
+
+            // TODO: 计算并显示鼠标相对于玩家的角度
+            // 你的代码：
+            const mouseAngle = 0; // 计算鼠标角度
+            document.getElementById('mouseAngle').textContent = Math.round(mouseAngle * 180 / Math.PI);
+
+            document.getElementById('fps').textContent = Math.round(fps);
+        }
+
+        // ========== 游戏主循环 ==========
+        function gameLoop(currentTime) {
+            // 计算deltaTime（秒）
+            const deltaTime = (currentTime - lastTime) / 1000;
+            lastTime = currentTime;
+
+            // 计算FPS
+            if (deltaTime > 0) {
+                fps = 1 / deltaTime;
+            }
+
+            // 更新和绘制
+            update(deltaTime);
+            draw();
+            updateInfo();
+
+            // 继续循环
+            requestAnimationFrame(gameLoop);
+        }
+
+        // ========== 控制面板事件 ==========
+        document.getElementById('playerSpeed').addEventListener('input', (e) => {
+            player.speed = parseFloat(e.target.value);
+            document.getElementById('playerSpeedValue').textContent = e.target.value;
+        });
+
+        document.getElementById('enemyCount').addEventListener('input', (e) => {
+            const count = parseInt(e.target.value);
+            initEnemies(count);
+            document.getElementById('enemyCountValue').textContent = count;
+        });
+
+        document.getElementById('orbitRadius').addEventListener('input', (e) => {
+            const radius = parseInt(e.target.value);
+            enemies.forEach(enemy => enemy.orbitRadius = radius);
+            document.getElementById('orbitRadiusValue').textContent = radius;
+        });
+
+        document.getElementById('rotationSpeed').addEventListener('input', (e) => {
+            const speed = parseFloat(e.target.value);
+            enemies.forEach(enemy => enemy.rotationSpeed = speed);
+            document.getElementById('rotationSpeedValue').textContent = speed;
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            player.x = canvas.width / 2;
+            player.y = canvas.height / 2;
+            player.angle = 0;
+            initEnemies(enemies.length);
+        });
+
+        document.getElementById('pauseBtn').addEventListener('click', (e) => {
+            isPaused = !isPaused;
+            e.target.textContent = isPaused ? '继续' : '暂停';
+        });
+
+        // ========== 启动游戏 ==========
+        initEnemies(3);
+        requestAnimationFrame(gameLoop);
+
+        console.log('🎮 游戏已启动！');
+        console.log('📝 TODO列表：');
+        console.log('1. 完善 player.move() 方法');
+        console.log('2. 完善 player.draw() 中的方向指示线');
+        console.log('3. 完善 Enemy 构造函数中的角度初始化');
+        console.log('4. 完善 Enemy.update() 方法');
+        console.log('5. 完善 Enemy.draw() 中的轨道圆圈');
+        console.log('6. 完善 handleInput() 中的移动逻辑');
+        console.log('7. 完善 handleInput() 中的朝向逻辑');
+        console.log('8. 完善 update() 中的敌人更新');
+        console.log('9. 完善 draw() 中的敌人绘制');
+        console.log('10. 完善 updateInfo() 中的鼠标角度计算');
+    </script>
+</body>
+</html>
